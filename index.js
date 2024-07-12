@@ -1,10 +1,16 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
+import rolRoute from './route/rol.route.js';
 
 import db from "./mongoC.js";
 
 const port = process.env.PORT || 4000;
 const app = express();
+
+app.use('/api/rol', rolRoute);
+
+app.use(cors({ origin: 'http://localhost:4200' }));
 
 app.use((_req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -31,6 +37,8 @@ app.post('/addUser',async (req, res) => {
     console.log("rreq"+req.body);
     res.send(result).status(204);
 });
+
+
 
 app.get('/getUsers', async(req, res) => {
     let collection = await db.collection("users");

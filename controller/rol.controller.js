@@ -1,5 +1,6 @@
-const { isValidObjectId } = require('mongoose');
-const Rol = require('../model/rol');
+import { isValidObjectId } from 'mongoose';
+import Rol from '../model/rol.js';
+
 const rolCtrl = {};
 
 rolCtrl.getAllRoles = async (req, res) => {
@@ -9,7 +10,7 @@ rolCtrl.getAllRoles = async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-}
+};
 
 rolCtrl.createRol = async (req, res) => {
     const rol = new Rol(req.body);
@@ -22,11 +23,11 @@ rolCtrl.createRol = async (req, res) => {
             message: 'Error procesando la operación.'
         });
     }
-}
+};
 
 rolCtrl.updateRol = async (req, res) => {
     const id = req.body._id;
-    if(!id && !isValidObjectId(id)) {
+    if (!id && !isValidObjectId(id)) {
         return res.status(400).json({
             status: '0',
             message: 'El ID del rol no es válido.'
@@ -35,7 +36,7 @@ rolCtrl.updateRol = async (req, res) => {
 
     try {
         const rol = await Rol.findByIdAndUpdate(id, req.body, { new: true });
-        if(!rol) {
+        if (!rol) {
             return res.status(404).json({
                 status: '0',
                 message: 'El rol no fue encontrado.'
@@ -48,12 +49,12 @@ rolCtrl.updateRol = async (req, res) => {
             message: 'Error procesando la operación.' 
         });
     }
-}
+};
 
 rolCtrl.getAllRolId = async (req, res) => {
     try {
         const rol = await Rol.findById(req.params.id);
-        if(!rol) {
+        if (!rol) {
             return res.status(404).json({
                 status: '0',
                 message: 'El rol no fue encontrado.'
@@ -66,11 +67,11 @@ rolCtrl.getAllRolId = async (req, res) => {
             message: 'Error procesando la operación.'
         });
     }
-}
+};
 
 rolCtrl.deleteRol = async (req, res) => {
     const id = req.params.id;
-    if(!id &&!isValidObjectId(id)) {
+    if (!id && !isValidObjectId(id)) {
         return res.status(400).json({
             status: '0',
             message: 'El ID del rol no es válido.'
@@ -79,7 +80,7 @@ rolCtrl.deleteRol = async (req, res) => {
 
     try {
         const rol = await Rol.findByIdAndDelete(id);
-        if(!rol) {
+        if (!rol) {
             return res.status(404).json({
                 status: '0',
                 message: 'El rol no fue encontrado.'
@@ -92,7 +93,6 @@ rolCtrl.deleteRol = async (req, res) => {
             message: 'Error procesando la operación.'
         });
     }
-}
+};
 
-module.exports = rolCtrl;
-
+export default rolCtrl;
