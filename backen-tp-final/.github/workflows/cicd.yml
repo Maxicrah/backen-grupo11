@@ -1,9 +1,9 @@
-name: Deploy Backen Application
+name: Deploy Backend Application
 
 on:
   push:
     branches:
-      -main
+      - main
 
 jobs:
   build:
@@ -11,12 +11,16 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+      
       - name: Create .env file
-        run: echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
+        run: echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" > .env
+      
       - name: Login to docker hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}       
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      
       - name: Build docker image
-        run: docker build -t maxicrah/backen-grupo11 .  
+        run: docker build -t maxicrah/backen-grupo11 .
+      
       - name: Publish image to docker hub
         run: docker push maxicrah/backen-grupo11:latest
   
@@ -26,7 +30,10 @@ jobs:
     steps:
       - name: Pull image from docker hub
         run: docker pull maxicrah/backen-grupo11:latest
+      
       - name: Delete old container
-        run: docker rm -f backen-grupo11-container  
+        run: |
+          docker ps -q --filter "name=backen-grupo11-container" | grep -q . && docker rm -f backen-grupo11-container || echo "No container to remove"
+      
       - name: Run docker container
-        run: docker run -d -p 4000:4000 --name backen-grupo11-container maxicrah/backen-grupo11       
+        run: docker run -d -p 4000:4000 --name backen-grupo11-container maxicrah/backen-grupo11:latest
