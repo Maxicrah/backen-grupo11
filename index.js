@@ -1,34 +1,46 @@
-require('dotenv').config();
+import express from 'express';
+import bodyParser from 'body-parser';
 
-const express = require('express');
-const cors = require('cors');
+import db from "./mongoC.js";
 
-const connectToDatabase = require('./config/mongo.config'); // Cambiado a la nueva configuración
-const PORT = process.env.PORT || 4000;
-
-connectToDatabase();
+const port = process.env.PORT || 4000;
 const app = express();
 
-app.use(express.json());
-app.use(cors({ origin: 'http://localhost:4200' }));
+app.use((_req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', '*');
+  
+    next();
+  });
 
-// rutas
-app.use('/api/rol', require('./route/rol.route'));
-app.use('/api/usuario', require('./route/usuario.route'));
-app.use('/api/locales', require('./route/local.route'));
-app.use('/api/propietario', require('./route/propietario.route'));
-app.use('/api/administrativo', require('./route/administrativo.route'));
-app.use('/api/encargado', require('./route/encargado.route'));
-app.use('/api/pago', require('./route/pago.route'));
-app.use('/api/local', require('./route/local.route'));
-app.use('/api/alquiler', require('./route/alquiler.route'));
+// Parses the text as url encoded data
+app.use(bodyParser.urlencoded({ extended: true }));
+ 
+// Parses the text as json
+app.use(bodyParser.json());
 
-app.get('/', async (req, res) => {
-    res.json({ message: 'Welcome to the API!' });
+app.get('/', (req, res) => {
+    res.send('Hello World, from express');
+})
+
+app.post('/addUser',async (req, res) => {
+    let collection = await db.collection("users");
+    let newDocument = req.body;
+    newDocument.date = new Date();
+    let result = await collection.insertOne(newDocument);
+    console.log("rreq"+req.body);
+    res.send(result).status(204);
 });
 
-const server = app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
+app.get('/getUsers', async(req, res) => {
+    let collection = await db.collection("users");
+    let results = await collection.find({})
+      
+      .toArray();
+    res.send(results).status(200);
 });
 
-module.exports = { app, server };
+app.listen(port, function () {
+    console.log("Server is listening at port:" + port);
+});
+ 
