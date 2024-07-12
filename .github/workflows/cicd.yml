@@ -32,8 +32,6 @@ jobs:
         run: docker pull maxicrah/backen-grupo11:latest
       
       - name: Delete old container
-        run: |
-          docker ps -q --filter "name=backen-grupo11-container" | grep -q . && docker rm -f backen-grupo11-container || echo "No container to remove"
-      
+        run: docker rm -f backen-grupo11-container  
       - name: Run docker container
         run: docker run -d -p 4000:4000 --name backen-grupo11-container maxicrah/backen-grupo11:latest
